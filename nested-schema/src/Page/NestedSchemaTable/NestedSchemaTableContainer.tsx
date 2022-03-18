@@ -25,18 +25,18 @@ function NestedSchemaTableContainer(props: Props) {
     const displayedRows: { [key: string]: DisplayedRow } = {};
     const schemaAFields = new Set<string>();
 
-    schemaA.forEach((field) => {
-        schemaAFields.add(field.fieldPath);
-        updateOrPopulateEntry(field, displayedRows, Status.ADD);
-        updateOrPopulateParentEntry(field, displayedRows, Status.ADD);
+    schemaA.forEach((item) => {
+        schemaAFields.add(item.fieldPath);
+        updateOrPopulateEntry(item, displayedRows, Status.ADD);
+        updateOrPopulateParentEntry(item, displayedRows, Status.ADD);
     });
 
-    schemaB.forEach((field) => {
-        const status = schemaAFields.has(field.fieldPath)
+    schemaB.forEach((item) => {
+        const status = schemaAFields.has(item.fieldPath)
             ? Status.REMAIN
             : Status.DELETE;
-        updateOrPopulateEntry(field, displayedRows, status);
-        updateOrPopulateParentEntry(field, displayedRows, status);
+        updateOrPopulateEntry(item, displayedRows, status, false);
+        updateOrPopulateParentEntry(item, displayedRows, status);
     });
 
     const differentRows: Set<string> = new Set<string>();
@@ -61,20 +61,22 @@ function NestedSchemaTableContainer(props: Props) {
 }
 
 function updateOrPopulateEntry(
-    field: SchemaMetadata,
+    item: SchemaMetadata,
     displayedRows: { [key: string]: DisplayedRow },
-    status: Status
+    status: Status,
+    shouldOverwriteItemValues: boolean = true
 ) {
-    if (field.fieldPath in displayedRows) {
+    if (item.fieldPath in displayedRows) {
         //happens when a child already populated its parent to add itself as a child
-        displayedRows[field.fieldPath] = {
-            ...displayedRows[field.fieldPath],
-            ...field,
+        const fieldValues = shouldOverwriteItemValues ? item : {};
+        displayedRows[item.fieldPath] = {
+            ...displayedRows[item.fieldPath],
+            ...fieldValues,
             status,
         };
     } else {
-        displayedRows[field.fieldPath] = {
-            ...field,
+        displayedRows[item.fieldPath] = {
+            ...item,
             children: [],
             status,
         };
@@ -82,24 +84,24 @@ function updateOrPopulateEntry(
 }
 
 function updateOrPopulateParentEntry(
-    field: SchemaMetadata,
+    item: SchemaMetadata,
     displayedRows: { [key: string]: DisplayedRow },
     status: Status
 ) {
-    const pathArray = field.fieldPath.split(".");
+    const pathArray = item.fieldPath.split(".");
     const directParent = pathArray.slice(0, pathArray.length - 1).join(".");
 
     if (directParent) {
         if (directParent in displayedRows) {
             if (
-                !displayedRows[directParent].children.includes(field.fieldPath)
+                !displayedRows[directParent].children.includes(item.fieldPath)
             ) {
-                displayedRows[directParent].children.push(field.fieldPath);
+                displayedRows[directParent].children.push(item.fieldPath);
             }
         } else {
             displayedRows[directParent] = {
                 fieldPath: directParent,
-                children: [field.fieldPath],
+                children: [item.fieldPath],
                 type: "",
                 status,
             };

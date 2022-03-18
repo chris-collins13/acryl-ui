@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { schemaA, schemaB } from "./data";
 import NestedSchemaTable from "./NestedSchemaTable";
@@ -13,6 +13,17 @@ function Page() {
     function collapseAll() {
         setAreAllExpanded(false);
     }
+
+    useEffect(() => {
+        if (areAllExpanded !== null) {
+            const timeout = setTimeout(() => {
+                setAreAllExpanded(null);
+            }, 0);
+            return () => {
+                clearTimeout(timeout);
+            };
+        }
+    }, [areAllExpanded]);
 
     return (
         <div>
