@@ -7,13 +7,16 @@ interface Props {
     fieldPath: string;
     displayedRows: { [key: string]: DisplayedRow };
     differentRows: Set<string>;
+    hasParentBeenToggled?: boolean;
 }
 
 function Row(props: Props) {
-    const { fieldPath, displayedRows, differentRows } = props;
+    const { fieldPath, displayedRows, differentRows, hasParentBeenToggled } =
+        props;
 
+    const [hasBeenToggled, setHasBeenToggled] = useState(hasParentBeenToggled);
     const [isExpanded, setIsExpanded] = useState(
-        isDefaultStateOpen(fieldPath, differentRows)
+        !hasBeenToggled && isDefaultStateOpen(fieldPath, differentRows)
     );
 
     const row = displayedRows[fieldPath];
@@ -21,6 +24,7 @@ function Row(props: Props) {
 
     function toggleIsExpanded() {
         setIsExpanded(!isExpanded);
+        setHasBeenToggled(true);
     }
 
     const numIndents = fieldPath.split(".").length - 1;
@@ -63,6 +67,7 @@ function Row(props: Props) {
                         fieldPath={child}
                         displayedRows={displayedRows}
                         differentRows={differentRows}
+                        hasParentBeenToggled={hasBeenToggled}
                     />
                 ))}
         </>
