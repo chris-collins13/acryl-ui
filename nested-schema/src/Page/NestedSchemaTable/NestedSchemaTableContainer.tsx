@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Field } from "../data";
+import { SchemaMetadata } from "../data";
 import NestedSchemaTableView from "./NestedSchemaTableView";
 
 export enum Status {
@@ -8,18 +8,19 @@ export enum Status {
     REMAIN,
 }
 
-export interface DisplayedRow extends Field {
+export interface DisplayedRow extends SchemaMetadata {
     children: string[];
     status: Status;
 }
 
 interface Props {
-    schemaA: Field[];
-    schemaB: Field[];
+    schemaA: SchemaMetadata[];
+    schemaB: SchemaMetadata[];
+    areAllExpanded: boolean | null;
 }
 
 function NestedSchemaTableContainer(props: Props) {
-    const { schemaA, schemaB } = props;
+    const { schemaA, schemaB, areAllExpanded } = props;
 
     const displayedRows: { [key: string]: DisplayedRow } = {};
     const schemaAFields = new Set<string>();
@@ -54,12 +55,13 @@ function NestedSchemaTableContainer(props: Props) {
             displayedRows={displayedRows}
             rootRows={rootRows}
             differentRows={differentRows}
+            areAllExpanded={areAllExpanded}
         />
     );
 }
 
 function updateOrPopulateEntry(
-    field: Field,
+    field: SchemaMetadata,
     displayedRows: { [key: string]: DisplayedRow },
     status: Status
 ) {
@@ -80,7 +82,7 @@ function updateOrPopulateEntry(
 }
 
 function updateOrPopulateParentEntry(
-    field: Field,
+    field: SchemaMetadata,
     displayedRows: { [key: string]: DisplayedRow },
     status: Status
 ) {

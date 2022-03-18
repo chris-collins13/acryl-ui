@@ -6,11 +6,12 @@ import Row from "./Row";
 interface Props {
     displayedRows: { [key: string]: DisplayedRow };
     rootRows: string[];
-    differentRows: Set<string>
+    differentRows: Set<string>;
+    areAllExpanded: boolean | null;
 }
 
 function NestedSchemaTableView(props: Props) {
-    const { displayedRows, rootRows, differentRows } = props;
+    const { displayedRows, rootRows, differentRows, areAllExpanded } = props;
 
     return (
         <Table>
@@ -28,6 +29,7 @@ function NestedSchemaTableView(props: Props) {
                         fieldPath={fieldPath}
                         displayedRows={displayedRows}
                         differentRows={differentRows}
+                        areAllExpanded={areAllExpanded}
                     />
                 ))}
             </TableBody>
@@ -44,9 +46,9 @@ const Table = styled.table`
 `;
 
 const TableHeader = styled.th`
-    border-bottom: 1px solid #F0F0F0;
+    border-bottom: 1px solid #f0f0f0;
     color: #000000;
-    font-family: 'Manrope';
+    font-family: "Manrope";
     padding: 13px 21px;
     position: relative;
     font-size: 12px;
@@ -55,8 +57,8 @@ const TableHeader = styled.th`
     width: 33%;
 
     ::after {
-        border: 1px solid #F0F0F0;
-        content: '';
+        border: 1px solid #f0f0f0;
+        content: "";
         height: 21px;
         position: absolute;
         right: 0;

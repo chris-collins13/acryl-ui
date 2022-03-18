@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { RightOutlined, DownOutlined } from "@ant-design/icons";
 import { DisplayedRow, Status } from "../NestedSchemaTableContainer";
@@ -7,17 +7,29 @@ interface Props {
     fieldPath: string;
     displayedRows: { [key: string]: DisplayedRow };
     differentRows: Set<string>;
+    areAllExpanded: boolean | null;
     hasParentBeenToggled?: boolean;
 }
 
 function Row(props: Props) {
-    const { fieldPath, displayedRows, differentRows, hasParentBeenToggled } =
-        props;
+    const {
+        fieldPath,
+        displayedRows,
+        differentRows,
+        areAllExpanded,
+        hasParentBeenToggled,
+    } = props;
 
     const [hasBeenToggled, setHasBeenToggled] = useState(hasParentBeenToggled);
     const [isExpanded, setIsExpanded] = useState(
         !hasBeenToggled && isDefaultStateOpen(fieldPath, differentRows)
     );
+
+    useEffect(() => {
+        if (areAllExpanded !== null) {
+            setIsExpanded(areAllExpanded);
+        }
+    }, [areAllExpanded]);
 
     const row = displayedRows[fieldPath];
     const fieldName = row.fieldPath.split(".").pop();
@@ -67,6 +79,7 @@ function Row(props: Props) {
                         fieldPath={child}
                         displayedRows={displayedRows}
                         differentRows={differentRows}
+                        areAllExpanded={areAllExpanded}
                         hasParentBeenToggled={hasBeenToggled}
                     />
                 ))}
