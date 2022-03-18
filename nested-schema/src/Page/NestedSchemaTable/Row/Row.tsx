@@ -25,7 +25,11 @@ function Row(props: Props) {
     return (
         <>
             <RowWrapper>
-                <TableData numIndents={numIndents}>
+                <TableData
+                    numIndents={numIndents}
+                    status={row.status}
+                    isLeftEnd
+                >
                     {[...Array(numIndents)].map((_indent, index) => (
                         <Indent key={index} indentIndex={index} />
                     ))}
@@ -41,14 +45,12 @@ function Row(props: Props) {
                     <FieldPath>{row.fieldPath}</FieldPath>
                     <TypeTag>{row.type}</TypeTag>
                 </TableData>
-                <TableData>
+                <TableData status={row.status}>
                     <Description>{row.description}</Description>
                 </TableData>
-                <TableData>
-                    <Description>
-                        {row.tags &&
-                            row.tags.map((tag) => <Tag key={tag}>{tag}</Tag>)}
-                    </Description>
+                <TableData status={row.status} isRightEnd>
+                    {row.tags &&
+                        row.tags.map((tag) => <Tag key={tag}>{tag}</Tag>)}
                 </TableData>
             </RowWrapper>
             {isExpanded &&
@@ -115,8 +117,12 @@ const StyledDownArrow = styled(DownOutlined)`
     }
 `;
 
-const TableData = styled.td<{ numIndents?: number }>`
-    border-bottom: 1px solid #f0f0f0;
+const TableData = styled.td<{
+    numIndents?: number;
+    status?: Status;
+    isLeftEnd?: boolean;
+    isRightEnd?: boolean;
+}>`
     padding: 15px;
     position: relative;
 
@@ -124,6 +130,33 @@ const TableData = styled.td<{ numIndents?: number }>`
         props.numIndents
             ? `padding-left: calc(15px + ${props.numIndents} * 19px);`
             : ""}
+
+    &:after {
+        content: "";
+        height: 80%;
+        left: 0;
+        position: absolute;
+        top: 10%;
+        width: 100%;
+        z-index: -1;
+
+        ${(props) =>
+            props.numIndents
+                ? `width: calc(100% - (15px + ${props.numIndents} * 19px));`
+                : ""}
+        ${(props) =>
+            props.isLeftEnd &&
+            "border-radius: 5px 0 0 5px; left: auto; right: 0;"}
+        ${(props) =>
+            props.isRightEnd &&
+            "border-radius: 0 5px 5px 0; width: calc(100% - 10px);"}
+        ${(props) =>
+            props.status === Status.ADD &&
+            "background-color: rgba(51, 255, 0, 0.15);"}
+        ${(props) =>
+            props.status === Status.DELETE &&
+            "background-color: rgba(255, 0, 0, 0.15);"}
+    }
 `;
 
 const Description = styled.span`
