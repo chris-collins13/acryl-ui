@@ -24,6 +24,7 @@ function NestedSchemaTableView(props: Props) {
             <TableBody>
                 {rootRows.map((fieldPath) => (
                     <Row
+                        key={fieldPath}
                         fieldPath={fieldPath}
                         displayedRows={displayedRows}
                         differentRows={differentRows}
@@ -37,6 +38,7 @@ function NestedSchemaTableView(props: Props) {
 const TableBody = styled.tbody``;
 
 const Table = styled.table`
+    border-collapse: collapse;
     font-weight: 500;
     width: 100%;
 `;

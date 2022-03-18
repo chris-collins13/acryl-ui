@@ -20,10 +20,15 @@ function Row(props: Props) {
         setIsExpanded(!isExpanded);
     }
 
+    const numIndents = fieldPath.split(".").length - 1;
+
     return (
         <>
             <RowWrapper>
-                <TableData>
+                <TableData numIndents={numIndents}>
+                    {[...Array(numIndents)].map((_indent, index) => (
+                        <Indent key={index} indentIndex={index} />
+                    ))}
                     {!!row.children.length && (
                         <>
                             {isExpanded ? (
@@ -39,10 +44,17 @@ function Row(props: Props) {
                 <TableData>
                     <Description>{row.description}</Description>
                 </TableData>
+                <TableData>
+                    <Description>
+                        {row.tags &&
+                            row.tags.map((tag) => <Tag key={tag}>{tag}</Tag>)}
+                    </Description>
+                </TableData>
             </RowWrapper>
             {isExpanded &&
                 row.children.map((child) => (
                     <Row
+                        key={child}
                         fieldPath={child}
                         displayedRows={displayedRows}
                         differentRows={differentRows}
@@ -55,6 +67,19 @@ function Row(props: Props) {
 const RowWrapper = styled.tr`
     border-bottom: 1px solid #f0f0f0;
     min-height: 50px;
+`;
+
+const Indent = styled.div<{ indentIndex: number }>`
+    background-color: white;
+    border-right: 2px solid #f0f0f0;
+    display: inline-block;
+    height: calc(100% + 2px);
+    position: absolute;
+    top: -1px;
+    left: calc(
+        ${(props) => `${props.indentIndex} * 19px + ${props.indentIndex}px`}
+    );
+    width: 18px;
 `;
 
 const FieldPath = styled.span`
@@ -90,14 +115,30 @@ const StyledDownArrow = styled(DownOutlined)`
     }
 `;
 
-const TableData = styled.td`
-    padding: 10px;
+const TableData = styled.td<{ numIndents?: number }>`
+    border-bottom: 1px solid #f0f0f0;
+    padding: 15px;
+    position: relative;
+
+    ${(props) =>
+        props.numIndents
+            ? `padding-left: calc(15px + ${props.numIndents} * 19px);`
+            : ""}
 `;
 
 const Description = styled.span`
     color: #262626;
     font-size: 12px;
     line-height: 20px;
+`;
+
+const Tag = styled.span`
+    border: 1px solid #d9d9d9;
+    border-radius: 25px;
+    color: #262626;
+    font-size: 12px;
+    line-height: 20px;
+    padding: 2px 12px;
 `;
 
 export default Row;
