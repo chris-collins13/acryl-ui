@@ -20,7 +20,9 @@ function Row(props: Props) {
         hasParentBeenToggled,
     } = props;
 
-    const [hasBeenToggled, setHasBeenToggled] = useState(hasParentBeenToggled);
+    const [hasBeenToggled, setHasBeenToggled] = useState(
+        !!hasParentBeenToggled
+    );
     const [isExpanded, setIsExpanded] = useState(
         !hasBeenToggled && isDefaultStateOpen(fieldPath, differentRows)
     );
