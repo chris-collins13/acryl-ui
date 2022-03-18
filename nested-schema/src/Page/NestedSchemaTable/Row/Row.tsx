@@ -15,6 +15,7 @@ function Row(props: Props) {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const row = displayedRows[fieldPath];
+    const fieldName = row.fieldPath.split(".").pop();
 
     function toggleIsExpanded() {
         setIsExpanded(!isExpanded);
@@ -42,7 +43,7 @@ function Row(props: Props) {
                             )}
                         </>
                     )}
-                    <FieldPath>{row.fieldPath}</FieldPath>
+                    <FieldName>{fieldName}</FieldName>
                     <TypeTag>{row.type}</TypeTag>
                 </TableData>
                 <TableData status={row.status}>
@@ -84,7 +85,7 @@ const Indent = styled.div<{ indentIndex: number }>`
     width: 18px;
 `;
 
-const FieldPath = styled.span`
+const FieldName = styled.span`
     color: #262626;
     font-family: "Roboto Mono";
     font-size: 12px;
