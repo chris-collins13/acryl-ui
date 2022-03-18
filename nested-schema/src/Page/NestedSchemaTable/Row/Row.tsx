@@ -6,13 +6,15 @@ import { DisplayedRow, Status } from "../NestedSchemaTableContainer";
 interface Props {
     fieldPath: string;
     displayedRows: { [key: string]: DisplayedRow };
-    differentRows: string[];
+    differentRows: Set<string>;
 }
 
 function Row(props: Props) {
     const { fieldPath, displayedRows, differentRows } = props;
 
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(
+        isDefaultStateOpen(fieldPath, differentRows)
+    );
 
     const row = displayedRows[fieldPath];
     const fieldName = row.fieldPath.split(".").pop();
@@ -65,6 +67,20 @@ function Row(props: Props) {
                 ))}
         </>
     );
+}
+
+function isDefaultStateOpen(fieldPath: string, differentRows: Set<string>) {
+    let isDefaultStateOpen = false;
+
+    if (!differentRows.has(fieldPath)) {
+        differentRows.forEach((row) => {
+            if (row.includes(fieldPath)) {
+                isDefaultStateOpen = true;
+            }
+        });
+    }
+
+    return isDefaultStateOpen;
 }
 
 const RowWrapper = styled.tr`

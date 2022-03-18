@@ -6,7 +6,7 @@ import Row from "./Row";
 interface Props {
     displayedRows: { [key: string]: DisplayedRow };
     rootRows: string[];
-    differentRows: string[];
+    differentRows: Set<string>
 }
 
 function NestedSchemaTableView(props: Props) {

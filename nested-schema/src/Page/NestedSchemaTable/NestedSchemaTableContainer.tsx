@@ -38,14 +38,14 @@ function NestedSchemaTableContainer(props: Props) {
         updateOrPopulateParentEntry(field, displayedRows, status);
     });
 
-    const differentRows: string[] = [];
+    const differentRows: Set<string> = new Set<string>();
     const rootRows: string[] = [];
     Object.keys(displayedRows).forEach((key) => {
         if (!displayedRows[key].fieldPath.includes(".")) {
             rootRows.push(displayedRows[key].fieldPath);
         }
         if (displayedRows[key].status !== Status.REMAIN) {
-            differentRows.push(displayedRows[key].fieldPath);
+            differentRows.add(displayedRows[key].fieldPath);
         }
     });
 
