@@ -39,15 +39,11 @@ function NestedSchemaTableContainer(props: Props) {
         updateOrPopulateParentEntry(item, displayedRows, status);
     });
 
-    const differentRows: Set<string> = new Set<string>();
     const rootRows: string[] = [];
+    const differentRows: Set<string> = new Set<string>();
     Object.keys(displayedRows).forEach((key) => {
-        if (!displayedRows[key].fieldPath.includes(".")) {
-            rootRows.push(displayedRows[key].fieldPath);
-        }
-        if (displayedRows[key].status !== Status.REMAIN) {
-            differentRows.add(displayedRows[key].fieldPath);
-        }
+        updateRootRows(rootRows, displayedRows, key);
+        updateDifferentRows(differentRows, displayedRows, key);
     });
 
     return (
@@ -60,7 +56,7 @@ function NestedSchemaTableContainer(props: Props) {
     );
 }
 
-function updateOrPopulateEntry(
+export function updateOrPopulateEntry(
     item: SchemaMetadata,
     displayedRows: { [key: string]: DisplayedRow },
     status: Status,
@@ -83,7 +79,7 @@ function updateOrPopulateEntry(
     }
 }
 
-function updateOrPopulateParentEntry(
+export function updateOrPopulateParentEntry(
     item: SchemaMetadata,
     displayedRows: { [key: string]: DisplayedRow },
     status: Status
@@ -106,6 +102,26 @@ function updateOrPopulateParentEntry(
                 status,
             };
         }
+    }
+}
+
+export function updateRootRows(
+    rootRows: string[],
+    displayedRows: { [key: string]: DisplayedRow },
+    key: string
+) {
+    if (!displayedRows[key].fieldPath.includes(".")) {
+        rootRows.push(displayedRows[key].fieldPath);
+    }
+}
+
+export function updateDifferentRows(
+    differentRows: Set<string>,
+    displayedRows: { [key: string]: DisplayedRow },
+    key: string
+) {
+    if (displayedRows[key].status !== Status.REMAIN) {
+        differentRows.add(displayedRows[key].fieldPath);
     }
 }
 
