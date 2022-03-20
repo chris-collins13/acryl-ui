@@ -24,7 +24,7 @@ function Row(props: Props) {
         !!hasParentBeenToggled
     );
     const [isExpanded, setIsExpanded] = useState(
-        !hasBeenToggled && isDefaultStateOpen(fieldPath, differentRows)
+        isDefaultStateOpen(hasBeenToggled, fieldPath, differentRows)
     );
 
     useEffect(() => {
@@ -89,7 +89,13 @@ function Row(props: Props) {
     );
 }
 
-function isDefaultStateOpen(fieldPath: string, differentRows: Set<string>) {
+export function isDefaultStateOpen(
+    hasBeenToggled: boolean,
+    fieldPath: string,
+    differentRows: Set<string>
+) {
+    if (hasBeenToggled) return false;
+
     let isDefaultStateOpen = false;
 
     if (!differentRows.has(fieldPath)) {
@@ -108,7 +114,7 @@ const RowWrapper = styled.tr`
     min-height: 50px;
 `;
 
-const Indent = styled.div<{ indentIndex: number }>`
+export const Indent = styled.div<{ indentIndex: number }>`
     background-color: white;
     border-right: 2px solid #f0f0f0;
     display: inline-block;
@@ -138,7 +144,7 @@ const TypeTag = styled.span`
     padding: 2px 8px;
 `;
 
-const StyledRightArrow = styled(RightOutlined)`
+export const StyledRightArrow = styled(RightOutlined)`
     cursor: pointer;
 
     svg {
@@ -146,7 +152,7 @@ const StyledRightArrow = styled(RightOutlined)`
     }
 `;
 
-const StyledDownArrow = styled(DownOutlined)`
+export const StyledDownArrow = styled(DownOutlined)`
     cursor: pointer;
 
     svg {
@@ -202,7 +208,7 @@ const Description = styled.span`
     line-height: 20px;
 `;
 
-const Tag = styled.span`
+export const Tag = styled.span`
     border: 1px solid #d9d9d9;
     border-radius: 25px;
     color: #262626;

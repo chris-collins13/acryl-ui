@@ -32,10 +32,9 @@ function NestedSchemaTableContainer(props: Props) {
     });
 
     schemaB.forEach((item) => {
-        const status = schemaAFields.has(item.fieldPath)
-            ? Status.REMAIN
-            : Status.DELETE;
-        updateOrPopulateEntry(item, displayedRows, status, false);
+        const isInSchemaA = schemaAFields.has(item.fieldPath);
+        const status = isInSchemaA ? Status.REMAIN : Status.DELETE;
+        updateOrPopulateEntry(item, displayedRows, status, !isInSchemaA);
         updateOrPopulateParentEntry(item, displayedRows, status);
     });
 
