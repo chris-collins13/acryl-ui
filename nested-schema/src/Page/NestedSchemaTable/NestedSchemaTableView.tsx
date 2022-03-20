@@ -6,12 +6,12 @@ import Row from "./Row";
 interface Props {
     displayedRows: { [key: string]: DisplayedRow };
     rootRows: string[];
-    differentRows: Set<string>;
+    defaultOpenRows: Set<string>;
     areAllExpanded: boolean | null;
 }
 
 function NestedSchemaTableView(props: Props) {
-    const { displayedRows, rootRows, differentRows, areAllExpanded } = props;
+    const { displayedRows, rootRows, defaultOpenRows, areAllExpanded } = props;
 
     return (
         <Table>
@@ -28,7 +28,7 @@ function NestedSchemaTableView(props: Props) {
                         key={fieldPath}
                         fieldPath={fieldPath}
                         displayedRows={displayedRows}
-                        differentRows={differentRows}
+                        defaultOpenRows={defaultOpenRows}
                         areAllExpanded={areAllExpanded}
                     />
                 ))}

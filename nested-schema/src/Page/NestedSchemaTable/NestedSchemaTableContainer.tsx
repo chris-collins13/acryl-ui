@@ -39,17 +39,17 @@ function NestedSchemaTableContainer(props: Props) {
     });
 
     const rootRows: string[] = [];
-    const differentRows: Set<string> = new Set<string>();
+    const defaultOpenRows: Set<string> = new Set<string>();
     Object.keys(displayedRows).forEach((key) => {
         updateRootRows(rootRows, displayedRows, key);
-        updateDifferentRows(differentRows, displayedRows, key);
+        updateDefaultOpenRows(defaultOpenRows, displayedRows, key);
     });
 
     return (
         <NestedSchemaTableView
             displayedRows={displayedRows}
             rootRows={rootRows}
-            differentRows={differentRows}
+            defaultOpenRows={defaultOpenRows}
             areAllExpanded={areAllExpanded}
         />
     );
@@ -78,24 +78,30 @@ export function updateOrPopulateEntry(
     }
 }
 
+export function getParentFieldPath(fieldPath: string) {
+    const pathArray = fieldPath.split(".");
+    return pathArray.slice(0, pathArray.length - 1).join(".");
+}
+
 export function updateOrPopulateParentEntry(
     item: SchemaMetadata,
     displayedRows: { [key: string]: DisplayedRow },
     status: Status
 ) {
-    const pathArray = item.fieldPath.split(".");
-    const directParent = pathArray.slice(0, pathArray.length - 1).join(".");
+    const parentFieldPath = getParentFieldPath(item.fieldPath);
 
-    if (directParent) {
-        if (directParent in displayedRows) {
+    if (parentFieldPath) {
+        if (parentFieldPath in displayedRows) {
             if (
-                !displayedRows[directParent].children.includes(item.fieldPath)
+                !displayedRows[parentFieldPath].children.includes(
+                    item.fieldPath
+                )
             ) {
-                displayedRows[directParent].children.push(item.fieldPath);
+                displayedRows[parentFieldPath].children.push(item.fieldPath);
             }
         } else {
-            displayedRows[directParent] = {
-                fieldPath: directParent,
+            displayedRows[parentFieldPath] = {
+                fieldPath: parentFieldPath,
                 children: [item.fieldPath],
                 type: "",
                 status,
@@ -114,13 +120,25 @@ export function updateRootRows(
     }
 }
 
-export function updateDifferentRows(
-    differentRows: Set<string>,
+export function updateDefaultOpenRows(
+    defaultOpenRows: Set<string>,
     displayedRows: { [key: string]: DisplayedRow },
-    key: string
+    fieldPath: string
 ) {
-    if (displayedRows[key].status !== Status.REMAIN) {
-        differentRows.add(displayedRows[key].fieldPath);
+    const parentFieldPath = getParentFieldPath(fieldPath);
+    if (parentFieldPath && parentFieldPath in displayedRows) {
+        if (
+            defaultOpenRows.has(fieldPath) ||
+            displayedRows[parentFieldPath].status !==
+                displayedRows[fieldPath].status
+        ) {
+            defaultOpenRows.add(parentFieldPath);
+            updateDefaultOpenRows(
+                defaultOpenRows,
+                displayedRows,
+                parentFieldPath
+            );
+        }
     }
 }
 

@@ -19,7 +19,7 @@ describe("Row", () => {
     const defaultProps = {
         fieldPath: displayedItem2.fieldPath,
         displayedRows,
-        differentRows: new Set<string>(),
+        defaultOpenRows: new Set<string>(),
         areAllExpanded: null,
     };
 
@@ -108,45 +108,22 @@ describe("isDefaultStateOpen", () => {
         expect(isOpen).toBe(false);
     });
 
-    it("should return true if hasBeeToggled is false and one of its children are in differentRows", () => {
-        const differentRows = new Set([displayedItem1.children[0]]);
+    it("should return true if hasBeeToggled is false and it is in defaultOpenRows", () => {
+        const defaultOpenRows = new Set([displayedItem1.fieldPath]);
         const isOpen = isDefaultStateOpen(
             false,
             displayedItem1.fieldPath,
-            differentRows
+            defaultOpenRows
         );
         expect(isOpen).toBe(true);
     });
 
-    it("should return true if hasBeeToggled is false and one of its children's children are in differentRows", () => {
-        const differentRows = new Set([displayedItem3.fieldPath]);
+    it("should return false if hasBeeToggled is false and it is not in defaultOpenRows", () => {
+        const defaultOpenRows = new Set([displayedItem2.fieldPath]);
         const isOpen = isDefaultStateOpen(
             false,
             displayedItem1.fieldPath,
-            differentRows
-        );
-        expect(isOpen).toBe(true);
-    });
-
-    it("should return false if hasBeeToggled is false and none of its children are in differentRows", () => {
-        const differentRows = new Set<string>();
-        const isOpen = isDefaultStateOpen(
-            false,
-            displayedItem1.fieldPath,
-            differentRows
-        );
-        expect(isOpen).toBe(false);
-    });
-
-    it("should return false if hasBeeToggled is false, one of its children are in differentRows but so is this item", () => {
-        const differentRows = new Set<string>([
-            displayedItem1.fieldPath,
-            displayedItem1.children[0],
-        ]);
-        const isOpen = isDefaultStateOpen(
-            false,
-            displayedItem1.fieldPath,
-            differentRows
+            defaultOpenRows
         );
         expect(isOpen).toBe(false);
     });

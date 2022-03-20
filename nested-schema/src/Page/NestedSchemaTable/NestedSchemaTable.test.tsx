@@ -6,9 +6,10 @@ import {
     updateOrPopulateEntry,
     updateOrPopulateParentEntry,
     updateRootRows,
-    updateDifferentRows,
+    updateDefaultOpenRows,
+    getParentFieldPath,
 } from "./NestedSchemaTableContainer";
-import { item1, item2 } from "./fixtures";
+import { item1, item2, item3 } from "./fixtures";
 import Row from "./Row";
 
 describe("NestedSchemaTableView", () => {
@@ -18,7 +19,7 @@ describe("NestedSchemaTableView", () => {
             <NestedSchemaTableView
                 displayedRows={{}}
                 rootRows={rootRows}
-                differentRows={new Set()}
+                defaultOpenRows={new Set()}
                 areAllExpanded={null}
             />
         );
@@ -177,46 +178,60 @@ describe("updateRootRows", () => {
     });
 });
 
-describe("updateDifferentRows", () => {
-    it("should add the item to differentRows if the status is ADD", () => {
-        const displayedRows = {
-            [item1.fieldPath]: {
-                ...item1,
-                status: Status.ADD,
-                children: ["item_info.item_name"],
-            },
-        };
-        const differentRows = new Set<string>();
-        updateDifferentRows(differentRows, displayedRows, item1.fieldPath);
+describe("updateDefaultOpenRows", () => {
+    const displayedRows = {
+        [item1.fieldPath]: {
+            ...item1,
+            status: Status.REMAIN,
+            children: [item2.fieldPath],
+        },
+        [item2.fieldPath]: {
+            ...item2,
+            status: Status.REMAIN,
+            children: [item3.fieldPath],
+        },
+        [item3.fieldPath]: {
+            ...item3,
+            status: Status.DELETE,
+            children: [],
+        },
+    };
 
-        expect(differentRows).toMatchObject(new Set([item1.fieldPath]));
+    it("should add the item's parent and its parents recursively to defaultOpenRows if they have different statuses", () => {
+        const defaultOpenRows = new Set<string>();
+        updateDefaultOpenRows(defaultOpenRows, displayedRows, item3.fieldPath);
+
+        expect(defaultOpenRows).toMatchObject(
+            new Set([item1.fieldPath, item2.fieldPath])
+        );
     });
 
-    it("should add the item to differentRows if the status is DELETE", () => {
-        const displayedRows = {
-            [item1.fieldPath]: {
-                ...item1,
-                status: Status.DELETE,
-                children: ["item_info.item_name"],
-            },
-        };
-        const differentRows = new Set<string>();
-        updateDifferentRows(differentRows, displayedRows, item1.fieldPath);
+    it("should not add the item's parent to defaultOpenRows if they have the same status", () => {
+        const defaultOpenRows = new Set<string>();
+        updateDefaultOpenRows(defaultOpenRows, displayedRows, item2.fieldPath);
 
-        expect(differentRows).toMatchObject(new Set([item1.fieldPath]));
+        expect(defaultOpenRows).toMatchObject(new Set());
     });
 
-    it("should not add the item to differentRows if the status is REMAIN", () => {
-        const displayedRows = {
-            [item1.fieldPath]: {
-                ...item1,
-                status: Status.REMAIN,
-                children: ["item_info.item_name"],
-            },
-        };
-        const differentRows = new Set<string>();
-        updateDifferentRows(differentRows, displayedRows, item1.fieldPath);
+    it("should not add anything to defaultOpenRows if they have no parent", () => {
+        const defaultOpenRows = new Set<string>();
+        updateDefaultOpenRows(defaultOpenRows, displayedRows, item1.fieldPath);
 
-        expect(differentRows).toMatchObject(new Set());
+        expect(defaultOpenRows).toMatchObject(new Set());
+    });
+});
+
+describe("getParentFieldPath", () => {
+    it("should properly get the parent field path", () => {
+        let parentFieldPath = getParentFieldPath(item2.fieldPath);
+        expect(parentFieldPath).toBe(item1.fieldPath);
+
+        parentFieldPath = getParentFieldPath(item3.fieldPath);
+        expect(parentFieldPath).toBe(item2.fieldPath);
+    });
+
+    it("should return an empty string if there is no parent", () => {
+        const parentFieldPath = getParentFieldPath(item1.fieldPath);
+        expect(parentFieldPath).toBe("");
     });
 });

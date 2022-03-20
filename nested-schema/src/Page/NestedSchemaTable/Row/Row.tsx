@@ -6,7 +6,7 @@ import { DisplayedRow, Status } from "../NestedSchemaTableContainer";
 interface Props {
     fieldPath: string;
     displayedRows: { [key: string]: DisplayedRow };
-    differentRows: Set<string>;
+    defaultOpenRows: Set<string>;
     areAllExpanded: boolean | null;
     hasParentBeenToggled?: boolean;
 }
@@ -15,7 +15,7 @@ function Row(props: Props) {
     const {
         fieldPath,
         displayedRows,
-        differentRows,
+        defaultOpenRows,
         areAllExpanded,
         hasParentBeenToggled,
     } = props;
@@ -24,7 +24,7 @@ function Row(props: Props) {
         !!hasParentBeenToggled
     );
     const [isExpanded, setIsExpanded] = useState(
-        isDefaultStateOpen(hasBeenToggled, fieldPath, differentRows)
+        isDefaultStateOpen(hasBeenToggled, fieldPath, defaultOpenRows)
     );
 
     useEffect(() => {
@@ -80,7 +80,7 @@ function Row(props: Props) {
                         key={child}
                         fieldPath={child}
                         displayedRows={displayedRows}
-                        differentRows={differentRows}
+                        defaultOpenRows={defaultOpenRows}
                         areAllExpanded={areAllExpanded}
                         hasParentBeenToggled={hasBeenToggled}
                     />
@@ -92,21 +92,11 @@ function Row(props: Props) {
 export function isDefaultStateOpen(
     hasBeenToggled: boolean,
     fieldPath: string,
-    differentRows: Set<string>
+    defaultOpenRows: Set<string>
 ) {
     if (hasBeenToggled) return false;
 
-    let isDefaultStateOpen = false;
-
-    if (!differentRows.has(fieldPath)) {
-        differentRows.forEach((row) => {
-            if (row.includes(fieldPath)) {
-                isDefaultStateOpen = true;
-            }
-        });
-    }
-
-    return isDefaultStateOpen;
+    return defaultOpenRows.has(fieldPath);
 }
 
 const RowWrapper = styled.tr`
@@ -144,20 +134,21 @@ const TypeTag = styled.span`
     padding: 2px 8px;
 `;
 
-export const StyledRightArrow = styled(RightOutlined)`
+const arrowStyles = `
     cursor: pointer;
+    padding-left: 2px;
 
     svg {
-        height: 9px;
+        height: 10px;
     }
 `;
 
-export const StyledDownArrow = styled(DownOutlined)`
-    cursor: pointer;
+export const StyledRightArrow = styled(RightOutlined)`
+    ${arrowStyles}
+`;
 
-    svg {
-        height: 9px;
-    }
+export const StyledDownArrow = styled(DownOutlined)`
+    ${arrowStyles}
 `;
 
 const TableData = styled.td<{

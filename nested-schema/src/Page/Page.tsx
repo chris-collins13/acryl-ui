@@ -55,7 +55,7 @@ const Button = styled.button`
     font-size: 12px;
     font-weight: 700;
     line-height: 20px;
-    padding: 5px 25px;
+    padding: 5px 26px;
     margin-right: 13px;
 `;
 
