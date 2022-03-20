@@ -33,14 +33,13 @@ function Row(props: Props) {
         }
     }, [areAllExpanded]);
 
-    const row = displayedRows[fieldPath];
-    const fieldName = row.fieldPath.split(".").pop();
-
     function toggleIsExpanded() {
         setIsExpanded(!isExpanded);
         setHasBeenToggled(true);
     }
 
+    const row = displayedRows[fieldPath];
+    const fieldName = row.fieldPath.split(".").pop();
     const numIndents = fieldPath.split(".").length - 1;
 
     return (

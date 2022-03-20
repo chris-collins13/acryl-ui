@@ -150,29 +150,15 @@ describe("updateOrPopulateParentEntry", () => {
 
 describe("updateRootRows", () => {
     it("should add the item to root rows if it is a parent root", () => {
-        const displayedRows = {
-            [item1.fieldPath]: {
-                ...item1,
-                status: Status.ADD,
-                children: ["item_info.item_name"],
-            },
-        };
         const rootRows: string[] = [];
-        updateRootRows(rootRows, displayedRows, item1.fieldPath);
+        updateRootRows(rootRows, item1.fieldPath);
 
         expect(rootRows).toMatchObject([item1.fieldPath]);
     });
 
     it("should not add the item to root rows if it is not a parent root", () => {
-        const displayedRows = {
-            [item2.fieldPath]: {
-                ...item2,
-                status: Status.ADD,
-                children: ["item_info.item_name"],
-            },
-        };
         const rootRows: string[] = [];
-        updateRootRows(rootRows, displayedRows, item2.fieldPath);
+        updateRootRows(rootRows, item2.fieldPath);
 
         expect(rootRows).toMatchObject([]);
     });

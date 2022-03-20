@@ -40,9 +40,9 @@ function NestedSchemaTableContainer(props: Props) {
 
     const rootRows: string[] = [];
     const defaultOpenRows: Set<string> = new Set<string>();
-    Object.keys(displayedRows).forEach((key) => {
-        updateRootRows(rootRows, displayedRows, key);
-        updateDefaultOpenRows(defaultOpenRows, displayedRows, key);
+    Object.keys(displayedRows).forEach((fieldPath) => {
+        updateRootRows(rootRows, fieldPath);
+        updateDefaultOpenRows(defaultOpenRows, displayedRows, fieldPath);
     });
 
     return (
@@ -110,13 +110,9 @@ export function updateOrPopulateParentEntry(
     }
 }
 
-export function updateRootRows(
-    rootRows: string[],
-    displayedRows: { [key: string]: DisplayedRow },
-    key: string
-) {
-    if (!displayedRows[key].fieldPath.includes(".")) {
-        rootRows.push(displayedRows[key].fieldPath);
+export function updateRootRows(rootRows: string[], fieldPath: string) {
+    if (!fieldPath.includes(".")) {
+        rootRows.push(fieldPath);
     }
 }
 
@@ -126,6 +122,7 @@ export function updateDefaultOpenRows(
     fieldPath: string
 ) {
     const parentFieldPath = getParentFieldPath(fieldPath);
+
     if (parentFieldPath && parentFieldPath in displayedRows) {
         if (
             defaultOpenRows.has(fieldPath) ||
