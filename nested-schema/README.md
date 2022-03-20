@@ -13,3 +13,9 @@ Run the following:
 `yarn install`
 
 `yarn start`
+
+## Testing
+
+I decided to use Enzyme as the testing framework for this app. In order to see test results, run:
+
+`yarn test`
